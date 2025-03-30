@@ -2,13 +2,15 @@
     edit: false,
     edited: false,
     init() {
-        window.livewire.on('fieldEdited', (id, column) => {
-            if (id === '{{ $rowId }}' && column === '{{ $column }}') {
-                this.edited = true
-                setTimeout(() => {
-                    this.edited = false
-                }, 5000)
-            }
+        document.addEventListener('livewire:initialized', () => {
+            Livewire.on('fieldEdited', (id, column) => {
+                if (id === '{{ $rowId }}' && column === '{{ $column }}') {
+                    this.edited = true
+                    setTimeout(() => {
+                        this.edited = false
+                    }, 5000)
+                }
+            })
         })
     }
 }" x-init="init()" wire:key="{{ $rowId }}_{{ $column }}">

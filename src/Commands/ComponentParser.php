@@ -12,15 +12,15 @@ class ComponentParser
     protected $component;
     protected $componentClass;
     protected $directories;
+    protected $baseClassNamespace;
+    protected $baseClassPath;
 
     public function __construct($classNamespace, $rawCommand, $model = null)
     {
         $this->model = $model;
-
         $this->baseClassNamespace = $classNamespace;
 
         $classPath = static::generatePathFromNamespace($classNamespace);
-
         $this->baseClassPath = rtrim($classPath, DIRECTORY_SEPARATOR) . '/';
 
         $directories = preg_split('/[.\/]+/', $rawCommand);
@@ -100,8 +100,8 @@ class ComponentParser
 
     public static function generatePathFromNamespace($namespace)
     {
-        $name = Str::replaceFirst(app()->getNamespace(), '', $namespace);
+        $name = str_replace('\\', '/', $namespace);
 
-        return app('path') . '/' . str_replace('\\', '/', $name);
+        return app_path($name);
     }
 }

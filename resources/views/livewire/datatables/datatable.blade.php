@@ -63,8 +63,10 @@
 
                 @if($exportable)
                     <div x-data="{ init() {
-                        window.livewire.on('startDownload', link => window.open(link, '_blank'))
-                        } }" x-init="init">
+                        document.addEventListener('livewire:initialized', () => {
+                            Livewire.on('startDownload', link => window.open(link, '_blank'))
+                        })
+                    } }" x-init="init">
                         <button wire:click="export" class="flex items-center px-3 text-xs font-medium tracking-wider text-green-500 uppercase bg-white border border-green-400 space-x-2 rounded-md leading-4 hover:bg-green-200 focus:outline-none"><span>{{ __('Export') }}</span>
                             <x-icons.excel class="m-2" /></button>
                     </div>
@@ -88,7 +90,7 @@
             <div class="p-2 grid grid-cols-8 gap-2">
                 @foreach($this->columns as $index => $column)
                     @if ($column['hideable'])
-                        <button wire:click.prefetch="toggle('{{ $index }}')" class="px-3 py-2 rounded text-white text-xs focus:outline-none
+                        <button wire:click="toggle('{{ $index }}')" class="px-3 py-2 rounded text-white text-xs focus:outline-none
                         {{ $column['hidden'] ? 'bg-blue-100 hover:bg-blue-300 text-blue-600' : 'bg-blue-500 hover:bg-blue-800' }}">
                             {{ $column['label'] }}
                         </button>
@@ -98,6 +100,11 @@
         @endif
 
         <div wire:loading.class="opacity-50" class="rounded-lg @unless($complex || $this->hidePagination) rounded-b-none @endunless shadow-lg bg-white max-w-screen overflow-x-scroll border-2 @if($this->activeFilters) border-blue-500 @else border-transparent @endif @if($complex) rounded-b-none border-b-0 @endif">
+            <div wire:loading class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
+                <div class="flex items-center justify-center">
+                    <div class="w-8 h-8 border-4 border-blue-500 rounded-full animate-spin border-t-transparent"></div>
+                </div>
+            </div>
             <div>
                 <div class="table min-w-full align-middle">
                     @unless($this->hideHeader)

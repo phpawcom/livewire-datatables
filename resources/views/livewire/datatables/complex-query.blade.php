@@ -1,11 +1,13 @@
 <div x-data="{
         rules: @if($persistKey) $persist('').as('{{ $persistKey }}') @else '' @endif,
         init() {
-            Livewire.on('complexQuery', rules => this.rules = rules)
-            if (this.rules && this.rules !== '') {
-                $wire.set('rules', this.rules)
-                $wire.runQuery()
-            }
+            document.addEventListener('livewire:initialized', () => {
+                Livewire.on('complexQuery', rules => this.rules = rules)
+                if (this.rules && this.rules !== '') {
+                    $wire.set('rules', this.rules)
+                    $wire.runQuery()
+                }
+            })
         }
     }" class=""
 >

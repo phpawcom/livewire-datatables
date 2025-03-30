@@ -13,6 +13,8 @@ use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\On;
+use Livewire\Attributes\Computed;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\ColumnSet;
 use Mediconesystems\LivewireDatatables\Exports\DatatableExport;
@@ -85,16 +87,29 @@ class LivewireDatatable extends Component
     public $groupLabels = [];
 
     protected $query;
-    protected $listeners = [
-        'refreshLivewireDatatable',
-        'complexQuery',
-        'saveQuery',
-        'deleteQuery',
-        'applyToTable',
-        'resetTable',
-        'doTextFilter',
-        'toggleGroup',
-    ];
+    
+    #[On('refreshLivewireDatatable')]
+    #[On('complexQuery')]
+    #[On('saveQuery')]
+    #[On('deleteQuery')]
+    #[On('applyToTable')]
+    #[On('resetTable')]
+    #[On('doTextFilter')]
+    #[On('toggleGroup')]
+    public function handleEvent($event, $data = null)
+    {
+        match($event) {
+            'refreshLivewireDatatable' => $this->refreshLivewireDatatable(),
+            'complexQuery' => $this->complexQuery($data),
+            'saveQuery' => $this->saveQuery($data['name'], $data['rules']),
+            'deleteQuery' => $this->deleteQuery($data),
+            'applyToTable' => $this->applyToTable($data),
+            'resetTable' => $this->resetTable(),
+            'doTextFilter' => $this->doTextFilter($data['index'], $data['value']),
+            'toggleGroup' => $this->toggleGroup($data),
+            default => null
+        };
+    }
 
     protected $operators = [
         '=' => '=',
@@ -283,14 +298,12 @@ class LivewireDatatable extends Component
         }
     }
 
-    // save settings
-    public function dehydrate()
+    #[On('dehydrate')]
+    public function handleDehydrate()
     {
         if ($this->persistSearch) {
             session()->put($this->sessionStorageKey() . '_search', $this->search);
         }
-
-        return parent::dehydrate(); // @phpstan-ignore-line
     }
 
     public function columns()
@@ -461,7 +474,6 @@ class LivewireDatatable extends Component
 
             if ($relatedQuery->getRelation($relation) instanceof HasMany || $relatedQuery->getRelation($relation) instanceof HasManyThrough || $relatedQuery->getRelation($relation) instanceof BelongsToMany) {
                 $this->query->customWithAggregate($aggregateName, $column->aggregate ?? 'count', $columnName, $column->name);
-
                 return null;
             }
 
@@ -1027,7 +1039,7 @@ class LivewireDatatable extends Component
         $this->setPage(1);
         $this->setSessionStoredFilters();
 
-        $this->emitTo('complex-query', 'resetQuery');
+        $this->dispatch('resetQuery')->to('complex-query');
     }
 
     public function removeBooleanFilter($column)
@@ -1725,7 +1737,7 @@ class LivewireDatatable extends Component
 
     public function render()
     {
-        $this->emit('refreshDynamic');
+        $this->dispatch('refreshDynamic');
 
         if ($this->persistPerPage) {
             session()->put([$this->sessionStorageKey() . '_perpage' => $this->perPage]);

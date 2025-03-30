@@ -2,15 +2,17 @@
 
 namespace Mediconesystems\LivewireDatatables\Commands;
 
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Livewire\Commands\ComponentParser;
 use Livewire\Commands\FileManipulationCommand;
 use Livewire\LivewireComponentsFinder;
 
-class MakeDatatableCommand extends FileManipulationCommand
+class MakeDatatableCommand extends Command
 {
     protected $signature = 'make:livewire-datatable {name} {--model=}';
 
-    protected $desciption = 'Create a new Livewire Datatable';
+    protected $description = 'Create a new Livewire Datatable';
 
     public function handle()
     {
@@ -51,6 +53,13 @@ class MakeDatatableCommand extends FileManipulationCommand
         File::put($classPath, $this->parser->classContents());
 
         return $classPath;
+    }
+
+    protected function ensureDirectoryExists($path)
+    {
+        if (! File::isDirectory(dirname($path))) {
+            File::makeDirectory(dirname($path), 0755, true, true);
+        }
     }
 
     public function refreshComponentAutodiscovery()

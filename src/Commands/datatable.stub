@@ -3,6 +3,7 @@
 namespace [namespace];
 
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
+use Livewire\Attributes\Computed;
 
 class [class] extends LivewireDatatable
 {
@@ -11,6 +12,7 @@ class [class] extends LivewireDatatable
         //
     }
 
+    #[Computed]
     public function columns()
     {
         //

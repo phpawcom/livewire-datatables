@@ -6,9 +6,13 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Livewire\Component;
+use Livewire\Attributes\On;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Rule;
 
 class ComplexQuery extends Component
 {
+    #[Rule('required')]
     public $columns;
     public $persistKey;
     public $savedQueries;
@@ -22,7 +26,16 @@ class ComplexQuery extends Component
         ],
     ];
 
-    protected $listeners = ['updateSavedQueries', 'resetQuery'];
+    #[On('updateSavedQueries')]
+    #[On('resetQuery')]
+    public function handleEvent($event, $data = null)
+    {
+        match($event) {
+            'updateSavedQueries' => $this->updateSavedQueries($data),
+            'resetQuery' => $this->resetQuery(),
+            default => null
+        };
+    }
 
     public function mount($columns, $persistKey, $savedQueries = null)
     {
@@ -39,7 +52,6 @@ class ComplexQuery extends Component
     public function updatedRules($value, $key)
     {
         $this->clearOperandAndValueWhenColumnChanged($key);
-
         $this->runQuery();
     }
 
@@ -51,25 +63,25 @@ class ComplexQuery extends Component
         }
     }
 
-    public function getRulesStringProperty($rules = null, $logic = 'and')
+    #[Computed]
+    public function rulesString($rules = null, $logic = 'and')
     {
         return collect($rules ?? $this->rules)->map(function ($rule) {
             return $rule['type'] === 'rule'
                     ? implode(' ', [$this->columns[$rule['content']['column']]['label'] ?? '', $rule['content']['operand'] ?? '', $rule['content']['value'] ?? ''])
-                    : '(' . $this->getRulesStringProperty($rule['content'], $rule['logic']) . ')';
+                    : '(' . $this->rulesString($rule['content'], $rule['logic']) . ')';
         })->join(strtoupper(" $logic "));
     }
 
     public function runQuery()
     {
         $this->validateRules();
-
-        $this->emit('complexQuery', count($this->rules[0]['content']) ? $this->rules : null);
+        $this->dispatch('complexQuery', count($this->rules[0]['content']) ? $this->rules : null);
     }
 
     public function saveQuery($name)
     {
-        $this->emitUp('saveQuery', $name, $this->rules);
+        $this->dispatch('saveQuery', name: $name, rules: $this->rules);
     }
 
     public function loadRules($rules)
@@ -80,7 +92,7 @@ class ComplexQuery extends Component
 
     public function deleteRules($id)
     {
-        $this->emitUp('deleteQuery', $id);
+        $this->dispatch('deleteQuery', id: $id);
     }
 
     public function resetQuery()

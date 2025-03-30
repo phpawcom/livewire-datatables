@@ -4,11 +4,13 @@ namespace [namespace];
 
 use [use];
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
+use Livewire\Attributes\Computed;
 
 class [class] extends LivewireDatatable
 {
     public $model = [model]::class;
 
+    #[Computed]
     public function columns()
     {
         //
