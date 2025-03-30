@@ -9,6 +9,7 @@ use Livewire\Component;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Rule;
+use Livewire\Attributes\Layout;
 
 class ComplexQuery extends Component
 {
@@ -98,7 +99,13 @@ class ComplexQuery extends Component
     public function resetQuery()
     {
         $this->reset('rules');
-        $this->runQuery();
+        $this->rules = [
+            [
+                'type' => 'group',
+                'logic' => 'and',
+                'content' => [],
+            ],
+        ];
     }
 
     public function validateRules($rules = null, $key = '')
@@ -233,6 +240,7 @@ class ComplexQuery extends Component
             : $operands[$this->getRuleColumn($key)['type']];
     }
 
+    #[Layout('datatables::layouts.app')]
     public function render()
     {
         return view('datatables::complex-query');

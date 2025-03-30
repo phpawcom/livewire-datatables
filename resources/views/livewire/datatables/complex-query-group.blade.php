@@ -23,7 +23,7 @@
                         }
                     },
                     drop(e) {
-                        $wire.call('moveRule', this.source().getAttribute('dragging'), this.key)
+                        $wire.moveRule(this.source().getAttribute('dragging'), this.key)
                     },
                 }" drag-target
                     x-on:dragenter.prevent="dragenter"
@@ -42,7 +42,7 @@
                                 <div class="mr-8">
                                     <label class="block uppercase tracking-wide text-xs font-bold py-1 rounded flex justify-between">Logic</label>
                                     <select
-                                        wire:model="rules.{{ collect(explode('.', $key))->join(".content.") }}.logic"
+                                        wire:model.live="rules.{{ collect(explode('.', $key))->join(".content.") }}.logic"
                                         class="w-24 text-sm leading-4 block rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                                     >
                                         <option value="and">AND</option>
@@ -61,7 +61,6 @@
                             </div>
                         </div>
                     </div>
-
 
                     <div class="flex justify-end">
                         @unless($key === 0)

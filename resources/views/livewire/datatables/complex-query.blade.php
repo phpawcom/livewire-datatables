@@ -35,7 +35,7 @@
                         <div class="flex items-center space-x-2" x-data="{
                             name: null,
                             saveQuery() {
-                                $wire.call('saveQuery', this.name)
+                                $wire.saveQuery(this.name)
                                 this.name = null
                             }
                         }">

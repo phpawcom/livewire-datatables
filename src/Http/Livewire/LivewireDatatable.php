@@ -15,6 +15,9 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Rule;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\ColumnSet;
 use Mediconesystems\LivewireDatatables\Exports\DatatableExport;
@@ -27,7 +30,10 @@ class LivewireDatatable extends Component
     use WithPagination, WithCallbacks, WithPresetDateFilters, WithPresetTimeFilters;
 
     const SEPARATOR = '|**lwdt**|';
+    
+    #[Rule('required')]
     public $model;
+    
     public $columns;
     public $search;
     public $sort;
@@ -70,9 +76,7 @@ class LivewireDatatable extends Component
     public $persistFilters = true;
     public $visibleSelected = [];
     public $row = 1;
-
     public $tablePrefix = '';
-
     public $actions;
     public $massActionOption;
 
@@ -1170,6 +1174,7 @@ class LivewireDatatable extends Component
         return $this->paginationControls() ?? $this->paginationControls;
     }
 
+    #[Computed]
     public function getResultsProperty()
     {
         $this->row = 1;
@@ -1179,26 +1184,31 @@ class LivewireDatatable extends Component
         );
     }
 
+    #[Computed]
     public function getSelectFiltersProperty()
     {
         return collect($this->freshColumns)->filter->selectFilter;
     }
 
+    #[Computed]
     public function getBooleanFiltersProperty()
     {
         return collect($this->freshColumns)->filter->booleanFilter;
     }
 
+    #[Computed]
     public function getTextFiltersProperty()
     {
         return collect($this->freshColumns)->filter->textFilter;
     }
 
+    #[Computed]
     public function getNumberFiltersProperty()
     {
         return collect($this->freshColumns)->filter->numberFilter;
     }
 
+    #[Computed]
     public function getActiveFiltersProperty()
     {
         return count($this->activeDateFilters)
@@ -1735,6 +1745,7 @@ class LivewireDatatable extends Component
         return str_ireplace($string, (string) view('datatables::highlight', ['slot' => $output]), $value);
     }
 
+    #[Layout('datatables::layouts.app')]
     public function render()
     {
         $this->dispatch('refreshDynamic');
@@ -1743,7 +1754,7 @@ class LivewireDatatable extends Component
             session()->put([$this->sessionStorageKey() . '_perpage' => $this->perPage]);
         }
 
-        return view('datatables::datatable')->layoutData(['title' => $this->title]);
+        return view('datatables::datatable');
     }
 
     public function export(string $filename = 'DatatableExport.xlsx')
