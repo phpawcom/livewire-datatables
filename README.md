@@ -17,9 +17,14 @@
 
 ![screenshot](resources/images/screenshot.png "Screenshot")
 
+## Recent Updates
+- Added support for Livewire 3 and Laravel 12
+- Updated event handling system to use `dispatch()` instead of `emit()` for Livewire 3 compatibility
+- These updates were implemented with the assistance of AI to ensure modern compatibility
+
 ## Requirements
-- [Laravel 7, 8 or 9](https://laravel.com/docs/9.x)
-- [Livewire](https://laravel-livewire.com/)
+- [Laravel 7, 8, 9, 10, 11, or 12](https://laravel.com/docs/12.x)
+- [Livewire 2 or 3](https://laravel-livewire.com/)
 - [Tailwind](https://tailwindcss.com/)
 - [Alpine JS](https://github.com/alpinejs/alpine)
 
