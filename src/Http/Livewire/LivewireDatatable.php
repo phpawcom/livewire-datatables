@@ -92,28 +92,6 @@ class LivewireDatatable extends Component
 
     protected $query;
     
-    #[On('refreshLivewireDatatable')]
-    #[On('complexQuery')]
-    #[On('saveQuery')]
-    #[On('deleteQuery')]
-    #[On('applyToTable')]
-    #[On('resetTable')]
-    #[On('doTextFilter')]
-    #[On('toggleGroup')]
-    public function handleEvent($event, $data = null)
-    {
-        match($event) {
-            'refreshLivewireDatatable' => $this->refreshLivewireDatatable(),
-            'complexQuery' => $this->complexQuery($data),
-            'saveQuery' => $this->saveQuery($data['name'], $data['rules']),
-            'deleteQuery' => $this->deleteQuery($data),
-            'applyToTable' => $this->applyToTable($data),
-            'resetTable' => $this->resetTable(),
-            'doTextFilter' => $this->doTextFilter($data['index'], $data['value']),
-            'toggleGroup' => $this->toggleGroup($data),
-            default => null
-        };
-    }
 
     protected $operators = [
         '=' => '=',
@@ -165,6 +143,7 @@ class LivewireDatatable extends Component
      *
      * @example $this->emit('applyToTable', ['perPage' => 25]); // in any other livewire component on the same page
      */
+    #[On('applyToTable')]
     public function applyToTable($options)
     {
         if (isset($options['sort'])) {
@@ -210,6 +189,7 @@ class LivewireDatatable extends Component
     /**
      * Call to clear all searches, filters, selections, return to page 1 and set perPage to default.
      */
+    #[On('resetTable')]
     public function resetTable()
     {
         $this->perPage = config('livewire-datatables.default_per_page', 10);
@@ -803,7 +783,8 @@ class LivewireDatatable extends Component
     {
         $this->refreshLivewireDatatable();
     }
-
+    
+    #[On('refreshLivewireDatatable')]
     public function refreshLivewireDatatable()
     {
         $this->setPage(1);
@@ -816,6 +797,7 @@ class LivewireDatatable extends Component
      * @param  string|null  $direction  needs to be 'asc' or 'desc'. set to null to toggle the current direction.
      * @return void
      */
+    #[On('sort')]
     public function sort($index, $direction = null)
     {
         if (! in_array($direction, [null, 'asc', 'desc'])) {
@@ -856,7 +838,7 @@ class LivewireDatatable extends Component
 
         $this->setSessionStoredHidden();
     }
-
+    #[On('toggleGroup')]
     public function toggleGroup($group)
     {
         if ($this->isGroupVisible($group)) {
@@ -932,6 +914,7 @@ class LivewireDatatable extends Component
         $this->setSessionStoredFilters();
     }
 
+    #[On('doTextFilter')]
     public function doTextFilter($index, $value)
     {
         foreach (explode(' ', $value) as $val) {
@@ -1278,6 +1261,7 @@ class LivewireDatatable extends Component
         }
     }
 
+    #[On('complexQuery')]
     public function complexQuery($rules)
     {
         $this->complexQuery = $rules;
@@ -1836,11 +1820,13 @@ class LivewireDatatable extends Component
         return isset($row->checkbox_attribute) && in_array($row->checkbox_attribute, $this->selected);
     }
 
+    #[On('saveQuery')]
     public function saveQuery($name, $rules)
     {
         // Override this method with your own method for saving
     }
 
+    #[On('deleteQuery')]
     public function deleteQuery($id)
     {
         // Override this method with your own method for deleting
